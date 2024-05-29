@@ -4,9 +4,10 @@ import java.util.List;
 
 import com.musinsa.v1.brand.model.dto.BrandRequest;
 import com.musinsa.v1.brand.model.dto.BrandResponse;
+import com.musinsa.v1.brand.model.entity.Brand;
 
 public interface BrandService {
-	void addBrand(BrandRequest brandRequest);
+	Brand addBrand(BrandRequest brandRequest);
 	void updateBrand(Long id, BrandRequest brandRequest);
 	void deleteBrand(Long id);
 	List<BrandResponse> getAllBrands();

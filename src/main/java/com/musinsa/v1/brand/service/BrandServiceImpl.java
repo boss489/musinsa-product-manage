@@ -1,6 +1,5 @@
 package com.musinsa.v1.brand.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,13 +22,12 @@ public class BrandServiceImpl implements BrandService {
 
 	private final BrandRepository brandRepository;
 	private final ProductService productService;
-	private final EntityManager entityManager;
 
 	@Override
-	public void addBrand(BrandRequest brandRequest) {
+	public Brand addBrand(BrandRequest brandRequest) {
 		Brand brand = new Brand();
 		brand.setName(brandRequest.getName());
-		brandRepository.save(brand);
+		return brandRepository.save(brand);
 	}
 
 	@Override

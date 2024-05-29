@@ -18,30 +18,40 @@ import com.musinsa.v1.brand.model.dto.BrandRequest;
 import com.musinsa.v1.brand.model.entity.Brand;
 import com.musinsa.v1.brand.repository.BrandRepository;
 import com.musinsa.v1.brand.service.BrandServiceImpl;
+import com.musinsa.v1.product.repository.ProductRepository;
+import com.musinsa.v1.product.service.ProductService;
 
 @ExtendWith(MockitoExtension.class)
 public class BrandServiceTest {
 
+	@InjectMocks
+	private BrandServiceImpl brandService;
+
 	@Mock
 	private BrandRepository brandRepository;
 
-	@InjectMocks
-	private BrandServiceImpl brandService;
+	@Mock
+	private ProductService productService;
+
+	@Mock
+	private ProductRepository productRepository;
 
 	@Test
 	public void testAddBrand() {
 		BrandRequest request = new BrandRequest();
 		request.setName("Test Brand");
 
-		Brand brand = new Brand();
-		brand.setId(1L);
-		brand.setName("Test Brand");
+		Brand expectedBrand = new Brand();
+		expectedBrand.setId(1L);
+		expectedBrand.setName("Test Brand");
 
-		when(brandRepository.save(any(Brand.class))).thenReturn(brand);
+		when(brandRepository.save(any(Brand.class))).thenReturn(expectedBrand);
 
-		brandService.addBrand(request);
+		Brand resultBrand = brandService.addBrand(request);
 
-		verify(brandRepository, times(1)).save(any(Brand.class));
+		// 결과가 예상한 값과 일치하는지 확인합니다.
+		assertEquals(expectedBrand.getName(), resultBrand.getName());
+		assertEquals(expectedBrand.getId(), resultBrand.getId());
 	}
 
 	@Test

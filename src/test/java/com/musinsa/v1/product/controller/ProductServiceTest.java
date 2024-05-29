@@ -8,6 +8,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -49,19 +50,25 @@ class ProductServiceTest {
 		request.setCategoryId(1L);
 		request.setPrice(10000);
 
-		Brand brand = new Brand(1l, "Test Brand");
-
-		Category category = new Category(1l, "상의");
+		Brand brand = new Brand(1L, "Test Brand");
+		Category category = new Category(1L, "상의");
 
 		when(brandRepository.findById(anyLong())).thenReturn(Optional.of(brand));
 		when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(category));
-		when(productRepository.save(any(Product.class))).thenReturn(new Product());
 
-		productService.saveProduct(request);
+		Product savedProduct = new Product();
+		savedProduct.setBrand(brand);
+		savedProduct.setCategory(category);
+		savedProduct.setPrice(request.getPrice());
 
-		verify(brandRepository, times(1)).findById(1L);
-		verify(categoryRepository, times(1)).findById(1L);
-		verify(productRepository, times(1)).save(any(Product.class));
+		when(productRepository.save(any(Product.class))).thenReturn(savedProduct);
+
+		Product resultProduct = productService.saveProduct(request);
+
+		// 결과가 예상한 값과 일치하는지 확인.
+		assertEquals(savedProduct.getBrand(), resultProduct.getBrand());
+		assertEquals(savedProduct.getCategory(), resultProduct.getCategory());
+		assertEquals(savedProduct.getPrice(), resultProduct.getPrice());
 	}
 
 	@Test
