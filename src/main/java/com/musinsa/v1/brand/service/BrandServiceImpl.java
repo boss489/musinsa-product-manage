@@ -6,14 +6,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.musinsa.common.exception.NotFoundException;
-import com.musinsa.v1.brand.model.dto.BrandRequest;
+import com.musinsa.v1.brand.model.dto.BrandCrtReqDto;
+import com.musinsa.v1.brand.model.dto.BrandCrtResDto;
 import com.musinsa.v1.brand.model.dto.BrandResponse;
-import com.musinsa.v1.brand.model.entity.Brand;
+import com.musinsa.v1.brand.entity.Brand;
+import com.musinsa.v1.brand.model.dto.BrandUptReqDto;
 import com.musinsa.v1.brand.repository.BrandRepository;
-import com.musinsa.v1.product.model.entity.Product;
-import com.musinsa.v1.product.service.ProductService;
 
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -21,32 +20,26 @@ import lombok.RequiredArgsConstructor;
 public class BrandServiceImpl implements BrandService {
 
 	private final BrandRepository brandRepository;
-	private final ProductService productService;
 
 	@Override
-	public Brand addBrand(BrandRequest brandRequest) {
+	public BrandCrtResDto addBrand(BrandCrtReqDto brandCrtReqDto) {
 		Brand brand = new Brand();
-		brand.setName(brandRequest.getName());
-		return brandRepository.save(brand);
+		brand.setName(brandCrtReqDto.getName());
+		return new BrandCrtResDto(brandRepository.save(brand));
 	}
 
 	@Override
-	public void updateBrand(Long id, BrandRequest brandRequest) {
-		Brand brand = brandRepository.findById(id)
-			.orElseThrow(() -> new NotFoundException("Brand not found"));
+	public void updateBrand(BrandUptReqDto brandRequest) {
+		Brand brand = brandRepository.findById(brandRequest.getId())
+			.orElseThrow(() -> new NotFoundException("브랜드가 존재하지 않습니다"));
 
 		brand.setName(brandRequest.getName());
-		brandRepository.save(brand);
 	}
 
 	@Override
 	public void deleteBrand(Long id) {
-
 		Brand brand = brandRepository.findById(id)
-			.orElseThrow(() -> new NotFoundException("Brand not found"));
-
-		List<Product> products = productService.findAllByBrand(brand);
-		productService.deleteInBatch(products);
+			.orElseThrow(() -> new NotFoundException("브랜드가 존재하지 않습니다"));
 		brandRepository.delete(brand);
 	}
 
@@ -60,7 +53,7 @@ public class BrandServiceImpl implements BrandService {
 	@Override
 	public BrandResponse getBrandById(Long id) {
 		Brand brand = brandRepository.findById(id)
-			.orElseThrow(() -> new NotFoundException("Brand not found"));
+			.orElseThrow(() -> new NotFoundException("브랜드가 존재하지 않습니다"));
 
 		return new BrandResponse(brand.getId(), brand.getName());
 	}

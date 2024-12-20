@@ -28,11 +28,12 @@
 
 ### Build
 
-프로젝트를 빌드하려면 다음 명령어를 사용하십시오:
+-  프로젝트를 빌드하려면 다음 명령어를 사용하십시오:
 
 ```bash
 ./gradlew build
 ```
+- 통합테스트를 위한 intg 페키지, 단위테스트를 위한 unit 페키지로 구성되어 있습니다.
 
 ### Test
 
@@ -52,9 +53,6 @@
 ./gradlew bootRun
 ```
 
-애플리케이션이 시작된 후, 브라우저에서 다음 URL을 열어 API와 상호작용할 수 있습니다:
-- http://localhost:8080/products
-
 
 
 ## 3. API 문서
@@ -69,3 +67,4 @@ API 문서를 보려면 브라우저에서 Swagger UI에 접속할 수 있습니
 
 ### Thymeleaf를 이용한 화면 표시
 애플리케이션은 Thymeleaf를 사용하여 간단한 웹 UI를 제공합니다. 브라우저에서 /products 경로로 접근하면, JSON 응답과 표 형식으로 상품 정보를 확인할 수 있습니다.
+- http://localhost:8080/products

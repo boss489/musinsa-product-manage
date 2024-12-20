@@ -2,13 +2,14 @@ package com.musinsa.v1.brand.service;
 
 import java.util.List;
 
-import com.musinsa.v1.brand.model.dto.BrandRequest;
+import com.musinsa.v1.brand.model.dto.BrandCrtReqDto;
+import com.musinsa.v1.brand.model.dto.BrandCrtResDto;
 import com.musinsa.v1.brand.model.dto.BrandResponse;
-import com.musinsa.v1.brand.model.entity.Brand;
+import com.musinsa.v1.brand.model.dto.BrandUptReqDto;
 
 public interface BrandService {
-	Brand addBrand(BrandRequest brandRequest);
-	void updateBrand(Long id, BrandRequest brandRequest);
+	BrandCrtResDto addBrand(BrandCrtReqDto brandCrtReqDto);
+	void updateBrand(BrandUptReqDto brandUptReqDto);
 	void deleteBrand(Long id);
 	List<BrandResponse> getAllBrands();
 	BrandResponse getBrandById(Long id);

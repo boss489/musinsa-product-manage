@@ -6,11 +6,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-        }
-        .table-response, .form-container {
+         .form-container {
             flex: 1;
             padding: 20px;
             box-sizing: border-box;
@@ -44,101 +40,24 @@
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="table-response">
-        <h3>카테고리 별 최저 가격 및 브랜드</h3>
-        <table id="lowest-prices-table">
-            <thead>
-            <tr>
-                <th>Category</th>
-                <th>Brand</th>
-                <th>Price</th>
-            </tr>
-            </thead>
-            <tbody></tbody>
-            <tfoot>
-            <tr>
-                <td>Total</td>
-                <td colspan="2" id="category-total-price"></td>
-            </tr>
-            </tfoot>
-        </table>
-        <h3>최저가 브랜드 상품 가격 정보</h3>
-        <table id="lowest-total-table">
-            <thead>
-            <tr>
-                <th>Category</th>
-                <th>Price</th>
-            </tr>
-            </thead>
-            <tbody id="lowest-total-body"></tbody>
-            <tfoot>
-            <tr>
-                <td>Brand</td>
-                <td id="total-brand"></td>
-            </tr>
-            <tr>
-                <td>Total</td>
-                <td id="total-price"></td>
-            </tr>
-            </tfoot>
-        </table>
-    </div>
-
-    <div class="table-response">
-        <h3>브랜드 목록</h3>
-        <table id="brands-table">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-
-        <h3>상품 목록</h3>
-        <table id="products-table">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>BrandId</th>
-                <th>CategoryId</th>
-                <th>Price</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
-</div>
-
 <div class="form-container">
     <h2>브랜드 추가</h2>
     <form id="brandForm">
-        <div class="form-group">
-            <label for="brandName">Brand Name</label>
-            <input type="text" class="form-control" id="brandName" name="brandName" required>
+        <div class="form-group search-container">
+            <input type="text" class="form-control" id="addBrandVal" name="addBrandVal" placeholder="Enter brand name" required>
+            <button type="button" class="btn btn-primary" onclick="addBrand()">Add Brand</button>
         </div>
-        <button type="button" class="btn btn-primary" onclick="addBrand()">Add Brand</button>
+
     </form>
 
     <h2>상품 추가</h2>
     <form id="productForm">
-        <div class="form-group">
-            <label for="brandId">Brand ID</label>
-            <input type="text" class="form-control" id="brandId" name="brandId" required>
+        <div class="form-group search-container">
+            <input type="text" class="form-control" id="brandNm" name="brandNm" placeholder="Enter brand name" required>
+            <input type="text" class="form-control" id="categoryNm" name="categoryNm"placeholder="Enter category name"required>
+            <input type="number" class="form-control" id="price" name="price" placeholder="Enter price" required>
+            <button type="button" class="btn btn-primary" onclick="addProduct()">Add Product</button>
         </div>
-        <div class="form-group">
-            <label for="categoryId">Category ID</label>
-            <input type="text" class="form-control" id="categoryId" name="categoryId" required>
-        </div>
-        <div class="form-group">
-            <label for="price">Price</label>
-            <input type="number" class="form-control" id="price" name="price" required>
-        </div>
-        <button type="button" class="btn btn-primary" onclick="addProduct()">Add Product</button>
     </form>
 
     <h2>카테고리 상품정보</h2>
@@ -156,7 +75,6 @@
             <th>Lowest Price</th>
             <th>Highest Brand</th>
             <th>Highest Price</th>
-            <th>Actions</th>
         </tr>
         </thead>
         <tbody id="productList"></tbody>
@@ -169,67 +87,7 @@
     });
 
     function getRefresh(){
-        getLowestTotalPrice();
-        getLowestPricesByCategory();
-        loadBrands();
         loadProducts();
-    }
-    function getLowestTotalPrice() {
-        $.get("/api/v1/products/lowest-total", function(data) {
-            var tableBody = $('#lowest-total-body');
-            tableBody.empty();
-            data.lowestPrice.categories.forEach(function(item) {
-                var row = '<tr>' +
-                    '<td>' + item.category + '</td>' +
-                    '<td>' + item.price + '</td>' +
-                    '</tr>';
-                tableBody.append(row);
-            });
-            $('#total-price').text(data.lowestPrice.total);
-            $('#total-brand').text(data.lowestPrice.brand);
-        }).fail(function(data) {
-            alert(data.responseJSON.message);
-        });
-    }
-
-    function getLowestPricesByCategory() {
-        $.get("/api/v1/products/lowest-prices", function(data) {
-            var tableBody = $('#lowest-prices-table tbody');
-            tableBody.empty();
-            var total = 0;
-            data.forEach(function(item) {
-                var row = '<tr>' +
-                    '<td>' + item.category + '</td>' +
-                    '<td>' + item.brand + '</td>' +
-                    '<td>' + item.price + '</td>' +
-                    '</tr>';
-                tableBody.append(row);
-                total += item.price;
-            });
-            $('#category-total-price').text(total);
-        }).fail(function(data) {
-            alert(data.responseJSON.message);
-        });
-    }
-
-    function loadBrands() {
-        $.get("/api/v1/brands", function(data) {
-            var tableBody = $('#brands-table tbody');
-            tableBody.empty();
-            data.forEach(function(item) {
-                var row = '<tr>' +
-                    '<td>' + item.id + '</td>' +
-                    '<td><input type="text" value="' + item.name + '" class="form-control" id="brandName-' + item.id + '"></td>' +
-                    '<td>' +
-                    '<button class="btn btn-primary" onclick="updateBrand(' + item.id + ')">Update</button>' +
-                    '<button class="btn btn-danger" onclick="deleteBrand(' + item.id + ')">Delete</button>' +
-                    '</td>' +
-                    '</tr>';
-                tableBody.append(row);
-            });
-        }).fail(function(data) {
-            alert(data.responseJSON.message);
-        });
     }
 
     function loadProducts() {
@@ -239,8 +97,8 @@
             data.forEach(function(item) {
                 var row = '<tr>' +
                     '<td>' + item.id + '</td>' +
-                    '<td><input type="number" value="' + item.brandId + '" class="form-control" id="productBrand-' + item.id + '"></td>' +
-                    '<td><input type="number" value="' + item.categoryId + '" class="form-control" id="productCategory-' + item.id + '"></td>' +
+                    '<td><input type="number" value="' + item.brandNm + '" class="form-control" id="productBrand-' + item.id + '"></td>' +
+                    '<td><input type="number" value="' + item.categoryNm + '" class="form-control" id="productCategory-' + item.id + '"></td>' +
                     '<td><input type="number" value="' + item.price + '" class="form-control" id="productPrice-' + item.id + '"></td>' +
                     '<td>' +
                     '<button class="btn btn-primary" onclick="updateProduct(' + item.id + ')">Update</button>' +
@@ -256,7 +114,7 @@
 
     function addBrand() {
         var formData = {
-            name: $("#brandName").val()
+            name: $("#addBrandVal").val()
         };
 
         $.ajax({
@@ -264,43 +122,9 @@
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(formData),
-            success: function () {
-                alert("data added")
+            success: function (data) {
+                alert(data.message)
                 $('#brandForm')[0].reset();
-                getRefresh();
-            },
-            error: function(data) {
-                alert(data.responseJSON.message);
-            }
-        });
-    }
-
-    function updateBrand(id) {
-        var formData = {
-            name: $("#brandName-" + id).val()
-        };
-
-        $.ajax({
-            url: '/api/v1/brands/' + id,
-            type: 'PUT',
-            contentType: 'application/json',
-            data: JSON.stringify(formData),
-            success: function () {
-                alert("data updated")
-                getRefresh();
-            },
-            error: function(data) {
-                alert(data.responseJSON.message);
-            }
-        });
-    }
-
-    function deleteBrand(id) {
-        $.ajax({
-            url: '/api/v1/brands/' + id,
-            type: 'DELETE',
-            success: function () {
-                alert("data deleted")
                 getRefresh();
             },
             error: function(data) {
@@ -311,8 +135,8 @@
 
     function addProduct() {
         var formData = {
-            brandId: $("#brandId").val(),
-            categoryId: $("#categoryId").val(),
+            brandNm: $("#brandNm").val(),
+            categoryNm: $("#categoryNm").val(),
             price: $("#price").val()
         };
 
@@ -321,45 +145,9 @@
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(formData),
-            success: function () {
-                alert("data added")
+            success: function (data) {
+                alert(data.message);
                 $('#productForm')[0].reset();
-                getRefresh();
-            },
-            error: function(data) {
-                alert(data.responseJSON.message);
-            }
-        });
-    }
-
-    function updateProduct(id) {
-        var formData = {
-            brandId: $("#productBrand-" + id).val(),
-            categoryId: $("#productCategory-" + id).val(),
-            price: $("#productPrice-" + id).val()
-        };
-
-        $.ajax({
-            url: '/api/v1/products/' + id,
-            type: 'PUT',
-            contentType: 'application/json',
-            data: JSON.stringify(formData),
-            success: function () {
-                alert("data updated")
-                getRefresh();
-            },
-            error: function(data) {
-                alert(data.responseJSON.message);
-            }
-        });
-    }
-
-    function deleteProduct(id) {
-        $.ajax({
-            url: '/api/v1/products/' + id,
-            type: 'DELETE',
-            success: function () {
-                alert("data deleted")
                 getRefresh();
             },
             error: function(data) {
@@ -371,19 +159,23 @@
     function searchProducts() {
         var category = $("#searchCategory").val();
 
+        if(category === '') {
+            alert('카테고리명을 입력해주세요.');
+            return;
+        }
+
         $.ajax({
-            url: '/api/v1/products/category/prices',
+            url: '/api/v1/products/category/'+category,
             type: 'GET',
-            data: { categoryName: category },
             success: function (data) {
                 var productList = $('#productList');
                 productList.empty();
                 var row = '<tr>' +
-                    '<td>' + data.category + '</td>' +
-                    '<td>' + data.lowest.brand + '</td>' +
-                    '<td>' + data.lowest.price + '</td>' +
-                    '<td>' + data.highest.brand + '</td>' +
-                    '<td>' + data.highest.price + '</td>' +
+                    '<td>' + data.categoryNm + '</td>' +
+                    '<td>' + data.lowestPrice.brandNm + '</td>' +
+                    '<td>' + data.lowestPrice.price + '</td>' +
+                    '<td>' + data.highestPrice.brandNm + '</td>' +
+                    '<td>' + data.highestPrice.price + '</td>' +
                     '</tr>';
                 productList.append(row);
             },
